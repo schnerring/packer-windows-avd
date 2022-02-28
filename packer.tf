@@ -6,10 +6,15 @@ variable "location" {
 
 data "azurerm_subscription" "subscription" {}
 
-# Packer Resource Group
+# Packer Resource Groups
 
-resource "azurerm_resource_group" "packer" {
-  name     = "packer-rg"
+resource "azurerm_resource_group" "packer_artifacts" {
+  name     = "packer-artifacts-rg"
+  location = var.location
+}
+
+resource "azurerm_resource_group" "packer_build" {
+  name     = "packer-build-rg"
   location = var.location
 }
 
@@ -28,9 +33,23 @@ resource "azuread_service_principal_password" "packer" {
 }
 
 # RBAC
+# Grant `Reader` role to SP for subscription allowing Packer to read resource groups
+# Grant `Contributor` role to SP for Packer resource groups allowing Packer to manage their resources
 
-resource "azurerm_role_assignment" "packer_contributor" {
-  scope                = azurerm_resource_group.packer.id
+resource "azurerm_role_assignment" "subscription_reader" {
+  scope                = data.azurerm_subscription.subscription.id
+  role_definition_name = "Reader"
+  principal_id         = azuread_service_principal.packer.id
+}
+
+resource "azurerm_role_assignment" "packer_build_contributor" {
+  scope                = azurerm_resource_group.packer_build.id
+  role_definition_name = "Contributor"
+  principal_id         = azuread_service_principal.packer.id
+}
+
+resource "azurerm_role_assignment" "packer_artifacts_contributor" {
+  scope                = azurerm_resource_group.packer_artifacts.id
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.packer.id
 }
@@ -61,31 +80,29 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
   )
 }
 
-# Packer Location
+# Packer Resource Groups
 
-resource "github_actions_secret" "packer_location" {
+resource "github_actions_secret" "packer_artifacts_resource_group" {
   repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_LOCATION"
-  plaintext_value = azurerm_resource_group.packer.location
+  secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_artifacts.name
 
   provisioner "local-exec" {
     command     = <<-EOT
-      echo "location = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+      echo "artifacts_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
     EOT
     interpreter = ["pwsh", "-Command"]
   }
 }
 
-# Packer Resource Group
-
-resource "github_actions_secret" "packer_resource_group" {
+resource "github_actions_secret" "packer_build_resource_group" {
   repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_RESOURCE_GROUP"
-  plaintext_value = azurerm_resource_group.packer.name
+  secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_build.name
 
   provisioner "local-exec" {
     command     = <<-EOT
-      echo "resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+      echo "build_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
     EOT
     interpreter = ["pwsh", "-Command"]
   }

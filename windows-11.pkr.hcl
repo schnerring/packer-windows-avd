@@ -1,9 +1,3 @@
-variable "location" {
-  type        = string
-  description = "Azure region for Packer resources."
-  default     = "Switzerland North"
-}
-
 variable "client_id" {
   type        = string
   description = "Azure Service Principal App ID."
@@ -28,16 +22,14 @@ variable "tenant_id" {
   sensitive   = true
 }
 
-variable "shared_image_gallery_destination_resource_group" {
+variable "artifacts_resource_group" {
   type        = string
-  description = "Shared Image Gallery Destination Gallery Name."
-  sensitive   = true
+  description = "Packer Artifacts Resource Group."
 }
 
-variable "shared_image_gallery_destination_resource_group" {
+variable "build_resource_group" {
   type        = string
-  description = "Shared Image Gallery Destination Gallery Name."
-  sensitive   = true
+  description = "Packer Build Resource Group."
 }
 
 source "azure-arm" "avd" {
@@ -45,9 +37,9 @@ source "azure-arm" "avd" {
 
   communicator = "winrm"
   winrm_use_ssl = true
-  #winrm_insecure = true
-  #winrm_timeout = "5m"
-  #winrm_username = "packer"
+  winrm_insecure = true
+  winrm_timeout = "10m"
+  winrm_username = "packer"
 
   # Service Principal Authentication
 
@@ -66,9 +58,17 @@ source "azure-arm" "avd" {
   #image_offer     = "windows-11"
   #image_sku       = "win11-21h2-avd"
 
+  # Destination Image
+
+  managed_image_resource_group_name = var.artifacts_resource_group
+  managed_image_name                = "windows-11-m365-mimg"
+
   # Packer Computing Resources
 
-  location                  = var.location
-  build_resource_group_name = "packer-rg"
+  build_resource_group_name = var.build_resource_group
   vm_size                   = "Standard_D4ds_v4"
+}
+
+build {
+  source "azure-arm.avd" {}
 }
