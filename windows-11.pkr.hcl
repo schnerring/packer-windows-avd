@@ -65,4 +65,10 @@ source "azure-arm" "avd" {
   # Windows 11 without Office
   #image_offer     = "windows-11"
   #image_sku       = "win11-21h2-avd"
+
+  # Packer Computing Resources
+
+  location                  = var.location
+  build_resource_group_name = "packer-rg"
+  vm_size                   = "Standard_D4ds_v4"
 }
