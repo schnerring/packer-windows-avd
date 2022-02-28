@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "4ops.packer",
+    "davidanson.vscode-markdownlint",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "hashicorp.terraform",
+    "ms-vscode.powershell"
+  ]
+}
