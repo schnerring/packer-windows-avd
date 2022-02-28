@@ -39,14 +39,14 @@ resource "azurerm_shared_image_gallery" "packer" {
 
 # Export GitHub Secrets
 
-data "github_repository" "terraform_azurerm_avd" {
-  full_name = "schnerring/terraform-azurerm-avd"
+data "github_repository" "packer_windows_11_avd" {
+  full_name = "schnerring/packer-windows-11-avd"
 }
 
 # Azure CLI Credentials
 
 resource "github_actions_secret" "github_actions_azure_credentials" {
-  repository  = data.github_repository.terraform_azurerm_avd.name
+  repository  = data.github_repository.packer_windows_11_avd.name
   secret_name = "AZURE_CREDENTIALS"
 
   plaintext_value = jsonencode(
@@ -62,25 +62,25 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
 # Packer Authentication
 
 resource "github_actions_secret" "packer_client_id" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_ID"
   plaintext_value = azuread_application.packer.application_id
 }
 
 resource "github_actions_secret" "packer_client_secret" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_SECRET"
   plaintext_value = azuread_service_principal_password.packer.value
 }
 
 resource "github_actions_secret" "packer_subscription_id" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SUBSCRIPTION_ID"
   plaintext_value = data.azurerm_subscription.subscription.subscription_id
 }
 
 resource "github_actions_secret" "packer_tenant_id" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_TENANT_ID"
   plaintext_value = data.azurerm_subscription.subscription.tenant_id
 }
@@ -88,13 +88,13 @@ resource "github_actions_secret" "packer_tenant_id" {
 # Packer Shared Image Gallery Destination
 
 resource "github_actions_secret" "packer_shared_image_gallery_destination_resource_group" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer.name
 }
 
 resource "github_actions_secret" "packer_shared_image_gallery_destination_gallery_name" {
-  repository      = data.github_repository.terraform_azurerm_avd.name
+  repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_GALLERY_NAME"
   plaintext_value = azurerm_shared_image_gallery.packer.name
 }
