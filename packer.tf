@@ -35,14 +35,6 @@ resource "azurerm_role_assignment" "packer_contributor" {
   principal_id         = azuread_service_principal.packer.id
 }
 
-# Shared Image Gallery Containing Custom Windows 11 Images
-
-resource "azurerm_shared_image_gallery" "packer" {
-  name                = "packer_windows_11_gal"
-  resource_group_name = azurerm_resource_group.packer.name
-  location            = azurerm_resource_group.packer.location
-}
-
 # Export Variables For Packer
 
 locals {
@@ -79,6 +71,21 @@ resource "github_actions_secret" "packer_location" {
   provisioner "local-exec" {
     command     = <<-EOT
       echo "location = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
+}
+
+# Packer Resource Group
+
+resource "github_actions_secret" "packer_resource_group" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer.name
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
     EOT
     interpreter = ["pwsh", "-Command"]
   }
@@ -133,34 +140,6 @@ resource "github_actions_secret" "packer_tenant_id" {
   provisioner "local-exec" {
     command     = <<-EOT
       echo "tenant_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
-}
-
-# Packer Shared Image Gallery Destination
-
-resource "github_actions_secret" "packer_shared_image_gallery_destination_resource_group" {
-  repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_RESOURCE_GROUP"
-  plaintext_value = azurerm_resource_group.packer.name
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "shared_image_gallery_destination_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
-}
-
-resource "github_actions_secret" "packer_shared_image_gallery_destination_gallery_name" {
-  repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_GALLERY_NAME"
-  plaintext_value = azurerm_shared_image_gallery.packer.name
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "shared_image_gallery_destination_gallery_name = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
     EOT
     interpreter = ["pwsh", "-Command"]
   }
