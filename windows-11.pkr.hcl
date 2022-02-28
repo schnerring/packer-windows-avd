@@ -55,4 +55,14 @@ source "azure-arm" "avd" {
   client_secret   = var.client_secret
   subscription_id = var.subscription_id
   tenant_id       = var.tenant_id
+
+  # Source Image
+
+  os_type         = "Windows"
+  image_publisher = "MicrosoftWindowsDesktop"
+  image_offer     = "office-365"
+  image_sku       = "win11-21h2-avd-m365"
+  # Windows 11 without Office
+  #image_offer     = "windows-11"
+  #image_sku       = "win11-21h2-avd"
 }
