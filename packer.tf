@@ -28,3 +28,11 @@ resource "azurerm_role_assignment" "packer_contributor" {
   role_definition_name = "Contributor"
   principal_id         = azuread_service_principal.packer.id
 }
+
+# Shared Image Gallery Containing Custom Windows 11 Images
+
+resource "azurerm_shared_image_gallery" "packer" {
+  name                = "packer_windows_11_gal"
+  resource_group_name = azurerm_resource_group.packer.name
+  location            = azurerm_resource_group.packer.location
+}
