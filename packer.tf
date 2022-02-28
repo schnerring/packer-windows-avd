@@ -43,7 +43,11 @@ resource "azurerm_shared_image_gallery" "packer" {
   location            = azurerm_resource_group.packer.location
 }
 
-# Export GitHub Secrets
+# Export Variables For Packer
+
+locals {
+  packer_var_file = "default.auto.pkrvars.hcl"
+}
 
 data "github_repository" "packer_windows_11_avd" {
   full_name = "schnerring/packer-windows-11-avd"
@@ -65,30 +69,73 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
   )
 }
 
+# Packer Location
+
+resource "github_actions_secret" "packer_location" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_LOCATION"
+  plaintext_value = azurerm_resource_group.packer.location
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "location = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
+}
+
 # Packer Authentication
 
 resource "github_actions_secret" "packer_client_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_ID"
   plaintext_value = azuread_application.packer.application_id
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "client_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 resource "github_actions_secret" "packer_client_secret" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_SECRET"
   plaintext_value = azuread_service_principal_password.packer.value
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "client_secret = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 resource "github_actions_secret" "packer_subscription_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SUBSCRIPTION_ID"
   plaintext_value = data.azurerm_subscription.subscription.subscription_id
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "subscription_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 resource "github_actions_secret" "packer_tenant_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_TENANT_ID"
   plaintext_value = data.azurerm_subscription.subscription.tenant_id
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "tenant_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 # Packer Shared Image Gallery Destination
@@ -97,10 +144,24 @@ resource "github_actions_secret" "packer_shared_image_gallery_destination_resour
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer.name
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "shared_image_gallery_destination_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
 
 resource "github_actions_secret" "packer_shared_image_gallery_destination_gallery_name" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SHARED_IMAGE_GALLERY_DESTINATION_GALLERY_NAME"
   plaintext_value = azurerm_shared_image_gallery.packer.name
+
+  provisioner "local-exec" {
+    command     = <<-EOT
+      echo "shared_image_gallery_destination_gallery_name = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
+    EOT
+    interpreter = ["pwsh", "-Command"]
+  }
 }
