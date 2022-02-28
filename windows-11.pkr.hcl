@@ -35,4 +35,11 @@ variable "shared_image_gallery_destination_resource_group" {
 }
 
 source "azure-arm" "avd" {
+  # WinRM Communicator
+
+  communicator = "winrm"
+  winrm_use_ssl = true
+  #winrm_insecure = true
+  #winrm_timeout = "5m"
+  #winrm_username = "packer"
 }
