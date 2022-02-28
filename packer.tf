@@ -1,3 +1,9 @@
+variable "location" {
+  type        = string
+  description = "Azure region for Packer resources."
+  default     = "Switzerland North"
+}
+
 data "azurerm_subscription" "subscription" {}
 
 # Packer Resource Group

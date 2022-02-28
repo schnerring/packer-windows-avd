@@ -1,3 +1,9 @@
+variable "location" {
+  type        = string
+  description = "Azure region for Packer resources."
+  default     = "Switzerland North"
+}
+
 variable "client_id" {
   type        = string
   description = "Azure Service Principal App ID."
