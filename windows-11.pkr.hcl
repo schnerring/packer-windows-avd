@@ -35,10 +35,10 @@ variable "build_resource_group" {
 source "azure-arm" "avd" {
   # WinRM Communicator
 
-  communicator = "winrm"
-  winrm_use_ssl = true
+  communicator   = "winrm"
+  winrm_use_ssl  = true
   winrm_insecure = true
-  winrm_timeout = "10m"
+  winrm_timeout  = "5m"
   winrm_username = "packer"
 
   # Service Principal Authentication
