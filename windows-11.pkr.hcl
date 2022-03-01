@@ -95,4 +95,9 @@ build {
   provisioner "powershell" {
     script = "./provision/install-azure-powershell.ps1"
   }
+
+  # Sysprep
+  provisioner "powershell" {
+    script = "./provision/sysprep.ps1"
+  }
 }
