@@ -90,4 +90,9 @@ build {
   }
 
   provisioner "windows-restart" {}
+
+  # Azure PowerShell Modules
+  provisioner "powershell" {
+    script = "./provision/install-azure-powershell.ps1"
+  }
 }
