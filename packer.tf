@@ -49,10 +49,6 @@ resource "azurerm_role_assignment" "packer_artifacts_contributor" {
 
 # Export Variables For Packer
 
-locals {
-  packer_var_file = "default.auto.pkrvars.hcl"
-}
-
 data "github_repository" "packer_windows_11_avd" {
   full_name = "schnerring/packer-windows-11-avd"
 }
@@ -79,26 +75,12 @@ resource "github_actions_secret" "packer_artifacts_resource_group" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer_artifacts.name
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "artifacts_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
 }
 
 resource "github_actions_secret" "packer_build_resource_group" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer_build.name
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "build_resource_group = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
 }
 
 # Packer Authentication
@@ -107,50 +89,52 @@ resource "github_actions_secret" "packer_client_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_ID"
   plaintext_value = azuread_application.packer.application_id
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "client_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
 }
 
 resource "github_actions_secret" "packer_client_secret" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_SECRET"
   plaintext_value = azuread_service_principal_password.packer.value
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "client_secret = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
 }
 
 resource "github_actions_secret" "packer_subscription_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_SUBSCRIPTION_ID"
   plaintext_value = data.azurerm_subscription.subscription.subscription_id
-
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "subscription_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
 }
 
 resource "github_actions_secret" "packer_tenant_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_TENANT_ID"
   plaintext_value = data.azurerm_subscription.subscription.tenant_id
+}
 
-  provisioner "local-exec" {
-    command     = <<-EOT
-      echo "tenant_id = `"${self.plaintext_value}`"" >> ${local.packer_var_file}
-    EOT
-    interpreter = ["pwsh", "-Command"]
-  }
+output "packer_artifacts_resource_group" {
+  value     = github_actions_secret.packer_artifacts_resource_group.plaintext_value
+  sensitive = true
+}
+
+output "packer_build_resource_group" {
+  value     = github_actions_secret.packer_build_resource_group.plaintext_value
+  sensitive = true
+}
+
+output "packer_client_id" {
+  value     = github_actions_secret.packer_client_id.plaintext_value
+  sensitive = true
+}
+
+output "packer_client_secret" {
+  value     = github_actions_secret.packer_client_secret.plaintext_value
+  sensitive = true
+}
+
+output "packer_subscription_id" {
+  value     = github_actions_secret.packer_subscription_id.plaintext_value
+  sensitive = true
+}
+
+output "packer_tenant_id" {
+  value     = github_actions_secret.packer_tenant_id.plaintext_value
+  sensitive = true
 }

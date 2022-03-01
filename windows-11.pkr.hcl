@@ -32,6 +32,29 @@ variable "build_resource_group" {
   description = "Packer Build Resource Group."
 }
 
+variable "source_image_publisher" {
+  type        = string
+  description = "Windows Image Publisher."
+  default     = "MicrosoftWindowsDesktop"
+}
+
+variable "source_image_offer" {
+  type        = string
+  description = "Windows Image Offer."
+  default     = "office-365"
+}
+
+variable "source_image_sku" {
+  type        = string
+  description = "Windows Image SKU."
+  default     = "win11-21h2-avd-m365"
+}
+
+variable "source_image_version" {
+  type        = string
+  description = "Windows Image Version."
+}
+
 source "azure-arm" "avd" {
   # WinRM Communicator
 
@@ -51,9 +74,10 @@ source "azure-arm" "avd" {
   # Source Image
 
   os_type         = "Windows"
-  image_publisher = "MicrosoftWindowsDesktop"
-  image_offer     = "office-365"
-  image_sku       = "win11-21h2-avd-m365"
+  image_publisher = var.source_image_publisher
+  image_offer     = var.source_image_offer
+  image_sku       = var.source_image_sku
+  image_version   = var.source_image_version
   # Windows 11 without Office
   #image_offer     = "windows-11"
   #image_sku       = "win11-21h2-avd"
@@ -61,7 +85,7 @@ source "azure-arm" "avd" {
   # Destination Image
 
   managed_image_resource_group_name = var.artifacts_resource_group
-  managed_image_name                = "windows-11-m365-mimg"
+  managed_image_name                = "${var.source_image_sku}-${var.source_image_version}"
 
   # Packer Computing Resources
 

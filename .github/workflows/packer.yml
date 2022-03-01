@@ -1,0 +1,35 @@
+name: Packer
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  latest_windows_version:
+    name: Get latest Windows 11 version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.az_vm_image_version.outputs.version }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Azure Get VM Image Version
+        id: az_vm_image_version
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.34.0
+          inlineScript: |
+            version=$(az vm image list --publisher MicrosoftWindowsDesktop --offer office-365 --sku win11-21h2-avd-m365 --all --query "[*].version | sort(@)[-1:]" --out tsv)
+            echo "Latest Version: ${version}"
+            echo "::set-output name=version::${version}"
+
+  packer_build:
+    name: Packer Build
+    runs-on: ubuntu-latest
+    needs: latest_windows_version
+    steps:
+      - name: Print Windows Version
+        run: echo ${{ needs.latest_windows_version.outputs.version }}
