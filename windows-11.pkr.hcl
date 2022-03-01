@@ -76,4 +76,18 @@ build {
   provisioner "powershell" {
     inline = ["Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"]
   }
+
+  # Install Chocolatey packages
+  provisioner "file" {
+    source      = "./provision/choco.config"
+    destination = "D:/choco.config"
+  }
+
+  provisioner "powershell" {
+    inline = ["choco install --confirm D:/choco.config"]
+    # See https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes
+    valid_exit_codes = [0, 3010]
+  }
+
+  provisioner "windows-restart" {}
 }
