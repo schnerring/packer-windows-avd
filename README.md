@@ -40,7 +40,7 @@ az vm image list-skus --offer office-365 --publisher MicrosoftWindowsDesktop --q
 List versions:
 
 ```bash
-az vm image list --sku win11-21h2-avd-m365 --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].name" --out tsv
+az vm image list --sku win11-21h2-avd-m365 --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].version" --out tsv --all
 ```
 
 ## Without Office
@@ -54,5 +54,5 @@ az vm image list-skus --offer windows-11 --publisher MicrosoftWindowsDesktop --q
 List versions:
 
 ```bash
-az vm image list --sku win11-21h2-avd --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].name" --out tsv
+az vm image list --sku win11-21h2-avd --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].version" --out tsv --all
 ```
