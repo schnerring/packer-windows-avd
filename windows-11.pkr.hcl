@@ -35,19 +35,16 @@ variable "build_resource_group" {
 variable "source_image_publisher" {
   type        = string
   description = "Windows Image Publisher."
-  default     = "MicrosoftWindowsDesktop"
 }
 
 variable "source_image_offer" {
   type        = string
   description = "Windows Image Offer."
-  default     = "office-365"
 }
 
 variable "source_image_sku" {
   type        = string
   description = "Windows Image SKU."
-  default     = "win11-21h2-avd-m365"
 }
 
 variable "source_image_version" {
@@ -78,9 +75,6 @@ source "azure-arm" "avd" {
   image_offer     = var.source_image_offer
   image_sku       = var.source_image_sku
   image_version   = var.source_image_version
-  # Windows 11 without Office
-  #image_offer     = "windows-11"
-  #image_sku       = "win11-21h2-avd"
 
   # Destination Image
 

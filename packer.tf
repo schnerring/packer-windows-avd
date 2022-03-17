@@ -4,8 +4,6 @@ variable "location" {
   default     = "Switzerland North"
 }
 
-data "azurerm_subscription" "subscription" {}
-
 # Packer Resource Groups
 
 resource "azurerm_resource_group" "packer_artifacts" {
@@ -54,6 +52,8 @@ data "github_repository" "packer_windows_11_avd" {
 }
 
 # Azure CLI Credentials
+
+data "azurerm_subscription" "subscription" {}
 
 resource "github_actions_secret" "github_actions_azure_credentials" {
   repository  = data.github_repository.packer_windows_11_avd.name

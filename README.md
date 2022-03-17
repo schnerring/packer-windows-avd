@@ -27,20 +27,30 @@ Then run `packer build .`.
 
 ## Discover Windows 11 Versions
 
-Use the Azure CLI to disover what versions are available.
+Use the Azure CLI to discover what versions are available.
 
 ## With Office
 
 List SKUs:
 
 ```bash
-az vm image list-skus --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].name" --out tsv
+az vm image list-skus \
+  --offer office-365 \
+  --publisher MicrosoftWindowsDesktop \
+  --query "[*].name" \
+  --out tsv
 ```
 
 List versions:
 
 ```bash
-az vm image list --sku win11-21h2-avd-m365 --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].version" --out tsv --all
+az vm image list \
+  --sku win11-21h2-avd-m365 \
+  --offer office-365 \
+  --publisher MicrosoftWindowsDesktop \
+  --query "[*].version" \
+  --out tsv \
+  --all
 ```
 
 ## Without Office
@@ -48,11 +58,21 @@ az vm image list --sku win11-21h2-avd-m365 --offer office-365 --publisher Micros
 List SKUs:
 
 ```bash
-az vm image list-skus --offer windows-11 --publisher MicrosoftWindowsDesktop --query "[*].name" --out tsv
+az vm image list-skus \
+  --offer windows-11 \
+  --publisher MicrosoftWindowsDesktop \
+  --query "[*].name" \
+  --out tsv
 ```
 
 List versions:
 
 ```bash
-az vm image list --sku win11-21h2-avd --offer office-365 --publisher MicrosoftWindowsDesktop --query "[*].version" --out tsv --all
+az vm image list \
+  --sku win11-21h2-avd \
+  --offer windows-11 \
+  --publisher MicrosoftWindowsDesktop \
+  --query "[*].version" \
+  --out tsv \
+  --all
 ```
