@@ -112,31 +112,29 @@ resource "github_actions_secret" "packer_build_resource_group" {
 # Outputs to run Packer locally
 
 output "packer_artifacts_resource_group" {
-  value     = github_actions_secret.packer_artifacts_resource_group.plaintext_value
-  sensitive = true
+  value = azurerm_resource_group.packer_artifacts.name
 }
 
 output "packer_build_resource_group" {
-  value     = github_actions_secret.packer_build_resource_group.plaintext_value
-  sensitive = true
+  value = azurerm_resource_group.packer_build.name
 }
 
 output "packer_client_id" {
-  value     = github_actions_secret.packer_client_id.plaintext_value
+  value     = azuread_application.packer.application_id
   sensitive = true
 }
 
 output "packer_client_secret" {
-  value     = github_actions_secret.packer_client_secret.plaintext_value
+  value     = azuread_service_principal_password.packer.value
   sensitive = true
 }
 
 output "packer_subscription_id" {
-  value     = github_actions_secret.packer_subscription_id.plaintext_value
+  value     = data.azurerm_subscription.subscription.subscription_id
   sensitive = true
 }
 
 output "packer_tenant_id" {
-  value     = github_actions_secret.packer_tenant_id.plaintext_value
+  value     = data.azurerm_subscription.subscription.tenant_id
   sensitive = true
 }
