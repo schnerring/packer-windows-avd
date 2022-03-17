@@ -5,9 +5,20 @@ on:
     branches:
       - main
 
+env:
+  IMAGE_PUBLISHER: MicrosoftWindowsDesktop
+
+  # With Office 365
+  IMAGE_OFFER: office-365
+  IMAGE_SKU: win11-21h2-avd-m365
+
+  # Without Office 365
+  #IMAGE_OFFER: windows-11
+  #IMAGE_SKU: win11-21h2-avd
+
 jobs:
   latest_windows_version:
-    name: Get latest Windows 11 version
+    name: Get Latest Windows Version Available on Azure
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.az_vm_image_version.outputs.version }}
@@ -16,15 +27,28 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Azure Get VM Image Version
+      - name: Query Version
         id: az_vm_image_version
         uses: azure/CLI@v1
         with:
           azcliversion: 2.34.0
           inlineScript: |
-            version=$(az vm image list --publisher MicrosoftWindowsDesktop --offer office-365 --sku win11-21h2-avd-m365 --all --query "[*].version | sort(@)[-1:]" --out tsv)
-            echo "Latest Version: ${version}"
-            echo "::set-output name=version::${version}"
+            latest_version=$(
+              az vm image list \
+                --publisher "${IMAGE_PUBLISHER}" \
+                --offer "${IMAGE_OFFER}" \
+                --sku "${IMAGE_SKU}" \
+                --all \
+                --query "[*].version | sort(@)[-1:]" \
+                --out tsv
+            )
+
+            echo "Publisher: ${IMAGE_PUBLISHER}"
+            echo "Offer:     ${IMAGE_OFFER}"
+            echo "SKU:       ${IMAGE_SKU}"
+            echo "Version:   ${latest_version}"
+
+            echo "::set-output name=version::${latest_version}"
 
   packer_build:
     name: Packer Build
