@@ -51,7 +51,7 @@ data "github_repository" "packer_windows_11_avd" {
   full_name = "schnerring/packer-windows-11-avd"
 }
 
-# Azure CLI Credentials
+# Azure CLI Authentication
 
 data "azurerm_subscription" "subscription" {}
 
@@ -67,20 +67,6 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
       tenantId       = data.azurerm_subscription.subscription.tenant_id
     }
   )
-}
-
-# Packer Resource Groups
-
-resource "github_actions_secret" "packer_artifacts_resource_group" {
-  repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
-  plaintext_value = azurerm_resource_group.packer_artifacts.name
-}
-
-resource "github_actions_secret" "packer_build_resource_group" {
-  repository      = data.github_repository.packer_windows_11_avd.name
-  secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
-  plaintext_value = azurerm_resource_group.packer_build.name
 }
 
 # Packer Authentication
@@ -108,6 +94,22 @@ resource "github_actions_secret" "packer_tenant_id" {
   secret_name     = "PACKER_TENANT_ID"
   plaintext_value = data.azurerm_subscription.subscription.tenant_id
 }
+
+# Packer Resource Groups
+
+resource "github_actions_secret" "packer_artifacts_resource_group" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_artifacts.name
+}
+
+resource "github_actions_secret" "packer_build_resource_group" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_build.name
+}
+
+# Outputs to run Packer locally
 
 output "packer_artifacts_resource_group" {
   value     = github_actions_secret.packer_artifacts_resource_group.plaintext_value
