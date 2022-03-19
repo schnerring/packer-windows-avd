@@ -97,12 +97,12 @@ build {
 
   # Install Chocolatey packages
   provisioner "file" {
-    source      = "./provision/choco.config"
-    destination = "D:/choco.config"
+    source      = "./packages.config"
+    destination = "D:/packages.config"
   }
 
   provisioner "powershell" {
-    inline = ["choco install --confirm D:/choco.config"]
+    inline = ["choco install --confirm D:/packages.config"]
     # See https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes
     valid_exit_codes = [0, 3010]
   }
@@ -111,11 +111,18 @@ build {
 
   # Azure PowerShell Modules
   provisioner "powershell" {
-    script = "./provision/install-azure-powershell.ps1"
+    script = "./install-azure-powershell.ps1"
   }
 
-  # Sysprep
+  # Generalize image using Sysprep
+  # See https://www.packer.io/docs/builders/azure/arm#windows
+  # See https://docs.microsoft.com/en-us/azure/virtual-machines/windows/build-image-with-packer#define-packer-template
   provisioner "powershell" {
-    script = "./provision/sysprep.ps1"
+    inline = [
+      "while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "while ((Get-Service WindowsAzureGuestAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+      "while ($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+    ]
   }
 }
