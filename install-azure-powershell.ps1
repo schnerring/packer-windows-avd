@@ -3,9 +3,8 @@
 $ErrorActionPreference = "Stop"
 
 $downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v7.3.2-March2022/Az-Cmdlets-7.3.2.35305-x64.msi"
-$outFile = "D:\az_pwsh.msi" # ephemeral disk
+$outFile = "D:\az_pwsh.msi" # temporary disk
 
-Write-Host "Installing Azure PowerShell ..."
 Write-Host "Downloading $downloadUrl ..."
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 Invoke-WebRequest -Uri $downloadUrl -OutFile $outFile
