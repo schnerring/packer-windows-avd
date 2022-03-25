@@ -31,7 +31,16 @@ resource "azuread_service_principal_password" "packer" {
 }
 
 # RBAC
+# Grant service principal `Reader` role scoped to subscription
 # Grant service principal `Contributor` role scoped to Packer resource groups
+
+data "azurerm_subscription" "subscription" {}
+
+resource "azurerm_role_assignment" "subscription_reader" {
+  scope                = data.azurerm_subscription.subscription.id
+  role_definition_name = "Reader"
+  principal_id         = azuread_service_principal.packer.id
+}
 
 resource "azurerm_role_assignment" "packer_build_contributor" {
   scope                = azurerm_resource_group.packer_build.id
@@ -52,8 +61,6 @@ data "github_repository" "packer_windows_11_avd" {
 }
 
 # Azure CLI Authentication
-
-data "azurerm_subscription" "subscription" {}
 
 resource "github_actions_secret" "github_actions_azure_credentials" {
   repository  = data.github_repository.packer_windows_11_avd.name
