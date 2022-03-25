@@ -27,7 +27,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Query Version
+      - name: Query Latest Version
         id: az_vm_image_version
         uses: azure/CLI@v1
         with:
@@ -64,14 +64,12 @@ jobs:
       - name: Check If Image Exists
         id: az_image_exists
         uses: azure/CLI@v1
-        env:
-          RESOURCE_GROUP: ${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}
         with:
           azcliversion: 2.34.0
           inlineScript: |
-            if az image \
-              --resource-group "${RESOURCE_GROUP}" \
-              --name "${IMAGE_SKU}-${needs.latest_windows_version.outputs.version}"; then
+            if az image show \
+              --resource-group "${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}" \
+              --name "${IMAGE_SKU}-${{ needs.latest_windows_version.outputs.version }}"; then
               image_exists=true
             else
               image_exists=false
