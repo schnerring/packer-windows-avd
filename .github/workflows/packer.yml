@@ -106,7 +106,7 @@ jobs:
           PKR_VAR_tenant_id: ${{ secrets.PACKER_TENANT_ID }}
           PKR_VAR_artifacts_resource_group: ${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}
           PKR_VAR_build_resource_group: ${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}
-          PKR_VAR_source_image_publisher: ${IMAGE_PUBLISHER}
-          PKR_VAR_source_image_offer: ${IMAGE_OFFER}
-          PKR_VAR_source_image_sku: ${IMAGE_SKU}
+          PKR_VAR_source_image_publisher: ${{ env.IMAGE_PUBLISHER }}
+          PKR_VAR_source_image_offer: ${{ env.IMAGE_OFFER }}
+          PKR_VAR_source_image_sku: ${{ env.IMAGE_SKU }}
           PKR_VAR_source_image_version: ${{ needs.latest_windows_version.outputs.version }}
