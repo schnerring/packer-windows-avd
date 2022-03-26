@@ -29,7 +29,7 @@ Then run `packer build .`.
 
 Use the Azure CLI to discover what versions are available.
 
-## With Office
+### With Office
 
 List SKUs:
 
@@ -53,7 +53,7 @@ az vm image list \
   --all
 ```
 
-## Without Office
+### Without Office
 
 List SKUs:
 

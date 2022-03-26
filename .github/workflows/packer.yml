@@ -87,12 +87,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Fix backwards incompatibilities in template
-      - name: Fix Template
-        uses: hashicorp/packer-github-actions@master
-        with:
-          command: fix
-
       - name: Validate Template
         uses: hashicorp/packer-github-actions@master
         with:
