@@ -33,7 +33,7 @@ jobs:
         id: get_latest_version
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.34.0
+          azcliversion: 2.34.1
           inlineScript: |
             latest_version=$(
               az vm image list \
@@ -67,7 +67,7 @@ jobs:
         id: get_image
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.34.0
+          azcliversion: 2.34.1
           inlineScript: |
             if az image show \
               --resource-group "${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}" \
@@ -94,7 +94,6 @@ jobs:
         with:
           command: validate
           arguments: -syntax-only
-          target: .
 
       - name: Build Packer Image
         uses: hashicorp/packer-github-actions@master
