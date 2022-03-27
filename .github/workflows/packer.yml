@@ -20,17 +20,17 @@ env:
 
 jobs:
   latest_windows_version:
-    name: Get latest available Windows version from Azure
+    name: Get latest Windows version from Azure
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.az_vm_image_version.outputs.version }}
+      version: ${{ steps.get_latest_version.outputs.version }}
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-      - name: Query Latest Version
-        id: az_vm_image_version
+      - name: Get Latest Version
+        id: get_latest_version
         uses: azure/CLI@v1
         with:
           azcliversion: 2.34.0
@@ -52,19 +52,19 @@ jobs:
 
             echo "::set-output name=version::${latest_version}"
 
-  check_if_image_exists:
+  check_image_exists:
     name: Check if latest version has already been built
     runs-on: ubuntu-latest
     needs: latest_windows_version
     outputs:
-      image_exists: ${{ steps.az_image_exists.outputs.image_exists }}
+      exists: ${{ steps.get_image.outputs.exists }}
     steps:
       - name: Azure Login
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Check If Image Exists
-        id: az_image_exists
+        id: get_image
         uses: azure/CLI@v1
         with:
           azcliversion: 2.34.0
@@ -78,25 +78,25 @@ jobs:
             fi
 
             echo "Image Exists: ${image_exists}"
-            echo "::set-output name=image_exists::${image_exists}"
+            echo "::set-output name=exists::${image_exists}"
 
   packer:
-    name: Packer
+    name: Run Packer
     runs-on: ubuntu-latest
-    needs: [latest_windows_version, check_if_image_exists]
-    if: needs.check_if_image_exists.outputs.image_exists == 'false'
+    needs: [latest_windows_version, check_image_exists]
+    if: needs.check_image_exists.outputs.exists == 'false'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      - name: Validate Template
+      - name: Validate Packer Template
         uses: hashicorp/packer-github-actions@master
         with:
           command: validate
           arguments: -syntax-only
           target: .
 
-      - name: Build Artifact
+      - name: Build Packer Image
         uses: hashicorp/packer-github-actions@master
         with:
           command: build
