@@ -6,6 +6,8 @@ It [bundles apps](./packages.config) that make the image suitable for software d
 
 A [GitHub Actions workflow](./.github/workflows/packer.yml) checks daily for a new Windows release and runs Packer if required (typically on [Patch Tuesday](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates)).
 
+[Read more about my thoughts going into this on my blog.](https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/)
+
 ## Deploy Terraform Resources
 
 I like using Terraform to pre-provision the resources required by Packer. However, you can use the Azure Portal or similar alternatively.
