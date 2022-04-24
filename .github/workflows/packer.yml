@@ -29,6 +29,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Get Latest Version
         id: get_latest_version
         uses: azure/CLI@v1
@@ -63,6 +64,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Check If Image Exists
         id: get_image
         uses: azure/CLI@v1
@@ -111,3 +113,26 @@ jobs:
           PKR_VAR_source_image_offer: ${{ env.IMAGE_OFFER }}
           PKR_VAR_source_image_sku: ${{ env.IMAGE_SKU }}
           PKR_VAR_source_image_version: ${{ needs.latest_windows_version.outputs.version }}
+
+  cleanup:
+    name: Cleanup Packer Resources
+    runs-on: ubuntu-latest
+    needs: packer
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Cleanup Resource Group
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.34.1
+          inlineScript: |
+            az deployment group create \
+              --mode Complete \
+              --resource-group "${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}" \
+              --template-file cleanup-resource-group.bicep
