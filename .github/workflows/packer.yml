@@ -48,7 +48,7 @@ jobs:
             echo "SKU:       ${IMAGE_SKU}"
             echo "Version:   ${latest_version}"
 
-            echo "::set-output name=version::${latest_version}"
+            echo "version=${latest_version}" >> $GITHUB_OUTPUT
 
   check_image_exists:
     name: Check if latest version has already been built
@@ -77,7 +77,7 @@ jobs:
             fi
 
             echo "Image Exists: ${image_exists}"
-            echo "::set-output name=exists::${image_exists}"
+            echo "exists=${image_exists}" >> $GITHUB_OUTPUT
 
   packer:
     name: Run Packer
