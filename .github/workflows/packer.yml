@@ -37,12 +37,9 @@ jobs:
           azcliversion: 2.34.1
           inlineScript: |
             latest_version=$(
-              az vm image list \
-                --publisher "${IMAGE_PUBLISHER}" \
-                --offer "${IMAGE_OFFER}" \
-                --sku "${IMAGE_SKU}" \
-                --all \
-                --query "[*].version | sort(@)[-1:]" \
+              az vm image show \
+                --urn "${IMAGE_PUBLISHER}:${IMAGE_OFFER}:${IMAGE_SKU}:latest" \
+                --query name \
                 --out tsv
             )
 
