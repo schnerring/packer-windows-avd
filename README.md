@@ -59,6 +59,7 @@ az vm image list-skus \
   --offer office-365 \
   --publisher MicrosoftWindowsDesktop \
   --query "[*].name" \
+  --location switzerlandnorth \
   --out tsv
 ```
 
@@ -66,7 +67,7 @@ List versions:
 
 ```bash
 az vm image list \
-  --sku win11-21h2-avd-m365 \
+  --sku win11-23h2-avd-m365 \
   --offer office-365 \
   --publisher MicrosoftWindowsDesktop \
   --query "[*].version" \
@@ -83,6 +84,7 @@ az vm image list-skus \
   --offer windows-11 \
   --publisher MicrosoftWindowsDesktop \
   --query "[*].name" \
+  --location switzerlandnorth \
   --out tsv
 ```
 
@@ -90,7 +92,7 @@ List versions:
 
 ```bash
 az vm image list \
-  --sku win11-21h2-avd \
+  --sku win11-23h2-avd \
   --offer windows-11 \
   --publisher MicrosoftWindowsDesktop \
   --query "[*].version" \
