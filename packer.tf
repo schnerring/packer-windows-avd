@@ -4,17 +4,17 @@ terraform {
   required_providers {
     azuread = {
       source  = "azuread"
-      version = ">= 2.18.0"
+      version = ">= 2.53.0"
     }
 
     azurerm = {
       source  = "azurerm"
-      version = ">= 2.98.0"
+      version = ">= 4.0.1"
     }
 
     github = {
       source  = "integrations/github"
-      version = ">= 4.20.0"
+      version = ">= 6.2.3"
     }
   }
 }
@@ -48,7 +48,7 @@ resource "azuread_application" "packer" {
 }
 
 resource "azuread_service_principal" "packer" {
-  application_id = azuread_application.packer.application_id
+  client_id = azuread_application.packer.client_id
 }
 
 resource "azuread_service_principal_password" "packer" {
@@ -93,7 +93,7 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
 
   plaintext_value = jsonencode(
     {
-      clientId       = azuread_application.packer.application_id
+      clientId       = azuread_application.packer.client_id
       clientSecret   = azuread_service_principal_password.packer.value
       subscriptionId = data.azurerm_subscription.subscription.subscription_id
       tenantId       = data.azurerm_subscription.subscription.tenant_id
@@ -106,7 +106,7 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
 resource "github_actions_secret" "packer_client_id" {
   repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_CLIENT_ID"
-  plaintext_value = azuread_application.packer.application_id
+  plaintext_value = azuread_application.packer.client_id
 }
 
 resource "github_actions_secret" "packer_client_secret" {
@@ -152,7 +152,7 @@ output "packer_build_resource_group" {
 }
 
 output "packer_client_id" {
-  value     = azuread_application.packer.application_id
+  value     = azuread_application.packer.client_id
   sensitive = true
 }
 
