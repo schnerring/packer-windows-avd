@@ -8,15 +8,17 @@ on:
     - cron: 0 0 * * *
 
 env:
+  AZ_CLI_VERSION: 2.40.0
+
   IMAGE_PUBLISHER: MicrosoftWindowsDesktop
 
   # With Office 365
   IMAGE_OFFER: office-365
-  IMAGE_SKU: win11-21h2-avd-m365
+  IMAGE_SKU: win11-23h2-avd-m365
 
   # Without Office 365
   #IMAGE_OFFER: windows-11
-  #IMAGE_SKU: win11-21h2-avd
+  #IMAGE_SKU: win11-23h2-avd
 
 jobs:
   latest_windows_version:
@@ -34,7 +36,7 @@ jobs:
         id: get_latest_version
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.34.1
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             latest_version=$(
               az vm image show \
@@ -66,7 +68,7 @@ jobs:
         id: get_image
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.34.1
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             if az image show \
               --resource-group "${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}" \
@@ -127,7 +129,7 @@ jobs:
       - name: Cleanup Resource Group
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.34.1
+          azcliversion: ${{ env.AZ_CLI_VERSION }}
           inlineScript: |
             az deployment group create \
               --mode Complete \
