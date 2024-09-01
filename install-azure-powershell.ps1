@@ -1,8 +1,8 @@
-# See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps-msi?view=azps-7.3.2#install-or-update-on-windows-using-the-msi-package
+# See https://learn.microsoft.com/en-us/powershell/azure/install-azps-windows?view=azps-12.2.0&tabs=powershell&pivots=windows-msi
 
 $ErrorActionPreference = "Stop"
 
-$downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v7.3.2-March2022/Az-Cmdlets-7.3.2.35305-x64.msi"
+$downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v12.2.0-August2024/Az-Cmdlets-12.2.0.38863-x64.msi"
 $outFile = "D:\az_pwsh.msi" # temporary disk
 
 Write-Host "Downloading $downloadUrl ..."
